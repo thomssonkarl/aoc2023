@@ -1,0 +1,46 @@
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <algorithm>
+#include <numeric>
+#include <cmath>
+#include <set>
+#include <map>
+
+using namespace std;
+
+int solve(const vector<string>& input) {
+     
+    for (const auto& element : input) {
+        
+    }
+
+    return 0;
+}
+
+int main() {
+    ifstream inputFile("input1.txt");
+    if (!inputFile.is_open()) {
+        cerr << "Error opening the input file!" << endl;
+        return 1;
+
+    }
+
+    vector<string> input;
+    string line;
+    while (getline(inputFile, line)) {
+        input.push_back(line);
+
+    }
+
+    inputFile.close();
+
+    int result = solve(input);
+
+    cout << "Solution: " << result << endl;
+
+    return 0;
+
+}
+
+
