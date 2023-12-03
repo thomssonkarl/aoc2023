@@ -1,33 +1,43 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <algorithm>
 #include <numeric>
 #include <cmath>
-#include <set>
 #include <map>
+#include <sstream>
 
-using namespace std;
+int solve2(const vector<string>& input) {
+    uint32_t result{}; 
 
-int solve(const vector<string>& input) {
-     
-    for (const auto& element : input) {
+    for (const auto& str : input) {
         
     }
 
-    return 0;
+    return result;
+}
+
+
+
+int solve(const vector<string>& input) {
+    uint32_t result{}; 
+
+    for (const auto& str : input) {
+        
+    }
+
+    return result;
 }
 
 int main() {
-    ifstream inputFile("input1.txt");
+    std::ifstream inputFile("");
     if (!inputFile.is_open()) {
-        cerr << "Error opening the input file!" << endl;
+        std::cerr << "Error opening the input file!" << std::endl;
         return 1;
 
     }
 
-    vector<string> input;
-    string line;
+    std::vector<std::string> input;
+    std::string line;
     while (getline(inputFile, line)) {
         input.push_back(line);
 
@@ -36,8 +46,10 @@ int main() {
     inputFile.close();
 
     int result = solve(input);
+    int result2 = solve2(input);
 
     cout << "Solution: " << result << endl;
+    cout << "Solution 2: " << result2 << endl;
 
     return 0;
 
