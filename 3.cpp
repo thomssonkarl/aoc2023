@@ -12,16 +12,6 @@ const size_t dim = 140;
 
 using schematic_t = std::array<std::array<char, dim>, dim>;
 
-int solve2(const std::vector<std::string>& input) {
-    uint32_t result{}; 
-
-    for (const auto& str : input) {
-
-    }
-
-    return result;
-}
-
 bool is_symbol(char c) { 
     return !std::isdigit(c) && c != '.';
 }
@@ -64,7 +54,8 @@ int get_part_number(schematic_t& schematic, size_t row, size_t col) {
 void check_neighbors(schematic_t& schematic, 
         size_t row, 
         size_t col,
-        std::vector<int>& valid_parts) {
+        std::vector<int>& result_vector,
+        uint16_t part) {
 
     const std::vector<std::pair<int, int>> neighbor_offsets = {
         {0, 1}, {0, -1}, {-1, 0}, {1, 0}, {-1, -1}, {-1, 1}, {1, -1}, {1, 1}
@@ -82,12 +73,50 @@ void check_neighbors(schematic_t& schematic,
             }
         }
     }
-    std::copy(part_set.begin(), part_set.end(), std::back_inserter(valid_parts));
-        
+
+    if(part == 1) {
+        std::copy(part_set.begin(), part_set.end(), std::back_inserter(result_vector));
+        return;
+    }
+
+    if (part == 2) {
+        if (part_set.size() == 2) {
+            auto it = part_set.begin();
+            int first = *it;
+            it++;
+            int second = *it;
+            uint32_t gr = first * second;
+            result_vector.push_back(gr);
+            return;
+        }
+    }
 }
 
+int solve2(const std::vector<std::string>& input) {
+
+    schematic_t schematic;
+    std::vector<int> gear_ratios;
+
+    for (size_t row = 0; row < input.size(); ++row) {
+        const auto& str = input[row];
+        for (size_t col = 0; col < dim; ++col) {
+            schematic[row][col] = str[col];
+        }
+    }
+
+    for (size_t row = 0; row < dim; ++row) {
+        for (size_t col = 0; col < dim; ++col) {
+            if(schematic[row][col] == '*') {
+                check_neighbors(schematic, row, col, gear_ratios, 2);
+            }
+        }
+    }
+
+    return std::accumulate(gear_ratios.begin(), gear_ratios.end(), 0);
+}
+
+
 int solve(const std::vector<std::string>& input) {
-    uint32_t result{}; 
     schematic_t schematic;
     std::vector<int> valid_parts;
 
@@ -101,13 +130,14 @@ int solve(const std::vector<std::string>& input) {
     for (size_t row = 0; row < dim; ++row) {
         for (size_t col = 0; col < dim; ++col) {
             if(is_symbol(schematic[row][col])) {
-                check_neighbors(schematic, row, col, valid_parts);
+                check_neighbors(schematic, row, col, valid_parts, 1);
             }
         }
     }
 
     return std::accumulate(valid_parts.begin(), valid_parts.end(), 0);
 }
+
 
 int main() {
     std::ifstream inputFile("input3.txt");
