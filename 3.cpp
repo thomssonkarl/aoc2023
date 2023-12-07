@@ -92,33 +92,10 @@ void check_neighbors(schematic_t& schematic,
     }
 }
 
-int solve2(const std::vector<std::string>& input) {
 
+int solve(const std::vector<std::string>& input, uint16_t part) {
     schematic_t schematic;
-    std::vector<int> gear_ratios;
-
-    for (size_t row = 0; row < input.size(); ++row) {
-        const auto& str = input[row];
-        for (size_t col = 0; col < dim; ++col) {
-            schematic[row][col] = str[col];
-        }
-    }
-
-    for (size_t row = 0; row < dim; ++row) {
-        for (size_t col = 0; col < dim; ++col) {
-            if(schematic[row][col] == '*') {
-                check_neighbors(schematic, row, col, gear_ratios, 2);
-            }
-        }
-    }
-
-    return std::accumulate(gear_ratios.begin(), gear_ratios.end(), 0);
-}
-
-
-int solve(const std::vector<std::string>& input) {
-    schematic_t schematic;
-    std::vector<int> valid_parts;
+    std::vector<int> result_vector;
 
     for (size_t row = 0; row < input.size(); ++row) {
         const auto& str = input[row];
@@ -130,12 +107,12 @@ int solve(const std::vector<std::string>& input) {
     for (size_t row = 0; row < dim; ++row) {
         for (size_t col = 0; col < dim; ++col) {
             if(is_symbol(schematic[row][col])) {
-                check_neighbors(schematic, row, col, valid_parts, 1);
+                check_neighbors(schematic, row, col, result_vector, part);
             }
         }
     }
 
-    return std::accumulate(valid_parts.begin(), valid_parts.end(), 0);
+    return std::accumulate(result_vector.begin(), result_vector.end(), 0);
 }
 
 
@@ -156,8 +133,8 @@ int main() {
 
     inputFile.close();
 
-    int result = solve(input);
-    int result2 = solve2(input);
+    int result = solve(input, 1);
+    int result2 = solve(input, 2);
 
     std::cout << "Solution: " << result << std::endl;
     std::cout << "Solution 2: " << result2 << std::endl;
