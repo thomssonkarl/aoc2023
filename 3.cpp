@@ -105,12 +105,8 @@ int solve(const std::vector<std::string>& input) {
             }
         }
     }
-    /*for (const auto& element : valid_parts) {
-        std::cout << "q: " << element << std::endl;
-    }*/
 
-    result = std::accumulate(valid_parts.begin(), valid_parts.end(), 0);
-    return result;
+    return std::accumulate(valid_parts.begin(), valid_parts.end(), 0);
 }
 
 int main() {
