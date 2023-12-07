@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=c++11 -Wall
+CXXFLAGS = -std=c++11 -Wall -g
 
 SRC = $(wildcard *.cpp)
 EXECUTABLES = $(patsubst %.cpp,%,$(SRC))
@@ -13,4 +13,5 @@ all: $(EXECUTABLES)
 
 clean:
 	rm -f $(EXECUTABLES)
+	rm -rf $(wildcard *.dSYM)
 

@@ -6,7 +6,7 @@
 #include <map>
 #include <sstream>
 
-int solve2(const vector<string>& input) {
+int solve2(const std::vector<std::string>& input) {
     uint32_t result{}; 
 
     for (const auto& str : input) {
@@ -18,7 +18,7 @@ int solve2(const vector<string>& input) {
 
 
 
-int solve(const vector<string>& input) {
+int solve(const std::vector<std::string>& input) {
     uint32_t result{}; 
 
     for (const auto& str : input) {
@@ -48,8 +48,8 @@ int main() {
     int result = solve(input);
     int result2 = solve2(input);
 
-    cout << "Solution: " << result << endl;
-    cout << "Solution 2: " << result2 << endl;
+    std::cout << "Solution: " << result << std::endl;
+    std::cout << "Solution 2: " << result2 << std::endl;
 
     return 0;
 
