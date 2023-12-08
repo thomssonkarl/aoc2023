@@ -10,26 +10,32 @@ int solve2(const std::vector<std::string>& input) {
     uint32_t result{}; 
 
     for (const auto& str : input) {
-        
+
     }
 
     return result;
+
 }
-
-
 
 int solve(const std::vector<std::string>& input) {
     uint32_t result{}; 
 
     for (const auto& str : input) {
-        
+
     }
 
     return result;
+
 }
 
-int main() {
-    std::ifstream inputFile("");
+int main(int argc, char *argv[]) {
+    if (argc != 2) {
+        std::cerr << "Usage: " << argv[0] << " <input_file>" << std::endl;
+        return 1;
+
+    }
+
+    std::ifstream inputFile(argv[1]);
     if (!inputFile.is_open()) {
         std::cerr << "Error opening the input file!" << std::endl;
         return 1;
@@ -54,5 +60,4 @@ int main() {
     return 0;
 
 }
-
 
