@@ -1,8 +1,6 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <numeric>
-#include <cmath>
 #include <map>
 #include <sstream>
 
@@ -12,14 +10,14 @@ struct Hand {
     int bid;
 };
 
-bool cgt(char rank1, char rank2) {
-    std::string card_order = "23456789TJQKA";
+bool cgt(char rank1, char rank2, bool part2) {
+    std::string card_order = part2 ? "J23456789TQKA" : "23456789TJQKA";
     size_t p1 = card_order.find(rank1);
     size_t p2 = card_order.find(rank2);
     return p1 > p2;
 }
 
-uint16_t check_hand(std::string hand) {
+uint16_t check_hand(std::string hand, bool part2) {
     std::map<char, uint16_t> c_count;
     for (char c : hand) c_count[c]++;
 
@@ -27,35 +25,37 @@ uint16_t check_hand(std::string hand) {
     for (const auto& pair : c_count) values.push_back(pair.second);
     std::sort(values.begin(), values.end());
 
-    // Handle full house / four of a kind
+    if(part2 && c_count.contains('J')) {
+        uint16_t amount_j = c_count['J'];
+        auto it = std::find(values.begin(), values.end(), amount_j);
+        values.erase(it);
+        values[values.size() - 1] += amount_j;
+    }
+
     if(values.size() == 2) return (values[0] == 2) ? 5 : 6; 
-
-    // Handle 2 pair / three of a kind
     if(values.size() == 3) return (values[2] == 3) ? 4 : 3;
+    if(values.size() == 5) return 1;
+    if(values.size() == 4) return 2;
 
-    if(values.size() == 5) return 1; // [1,1,1,1,1] 
-    if(values.size() == 4) return 2; // [1,1,1,2]
-    if(values.size() == 1) return 7; // [5]
-
-    return 0;
+    return 7;
 }
 
-int compare_hands(std::string h1, std::string h2) {
-    if (check_hand(h1) > check_hand(h2)) return -1;
-    if (check_hand(h2) > check_hand(h1)) return 1;
+int compare_hands(std::string h1, std::string h2, bool part2) {
+    if (check_hand(h1, part2) > check_hand(h2, part2)) return -1;
+    if (check_hand(h2, part2) > check_hand(h1, part2)) return 1;
     for(size_t c = 0; c < 5; c++) {
-        if (cgt(h1[c], h2[c])) return -1;
-        if (cgt(h2[c], h1[c])) return 1;
+        if (cgt(h1[c], h2[c], part2)) return -1;
+        if (cgt(h2[c], h1[c], part2)) return 1;
     } 
     return 0;
 }
 
-void sort_hands(std::vector<Hand>& arr) {
+void sort_hands(std::vector<Hand>& arr, bool part2) {
     int n = arr.size();
 
     for (int i = 0; i < n - 1; ++i) {
         for (int j = 0; j < n - i - 1; ++j) {
-            if (compare_hands(arr[j].str, arr[j + 1].str) < 0) {
+            if (compare_hands(arr[j].str, arr[j + 1].str, part2) < 0) {
                 std::swap(arr[j], arr[j + 1]);
             }
         }
@@ -63,7 +63,7 @@ void sort_hands(std::vector<Hand>& arr) {
 }
 
 
-int solve(const std::vector<std::string>& input) {
+int solve(const std::vector<std::string>& input, bool part2) {
     uint32_t result{}; 
 
     std::vector<Hand> hands;
@@ -72,10 +72,10 @@ int solve(const std::vector<std::string>& input) {
         std::stringstream ss(str);
         std::string hand, ba;
         ss >> hand >> ba;
-        hands.push_back({hand, check_hand(hand), std::stoi(ba)});
+        hands.push_back({hand, check_hand(hand, part2), std::stoi(ba)});
     }
 
-    sort_hands(hands);
+    sort_hands(hands, part2);
     
     for (size_t i = 0; i < hands.size(); ++i) result += hands[i].bid * (i+1);
     
@@ -106,9 +106,11 @@ int main(int argc, char *argv[]) {
 
     inputFile.close();
 
-    int result = solve(input);
+    int result = solve(input, false);
+    int result2 = solve(input, true);
 
     std::cout << "Solution: " << result << std::endl;
+    std::cout << "Solution 2: " << result2 << std::endl;
 
     return 0;
 
