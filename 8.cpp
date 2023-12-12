@@ -6,7 +6,6 @@
 
 int solve(const std::vector<std::string>& input, std::string LR) {
 
-    uint32_t result{}; 
     std::map<std::string, std::pair<std::string, std::string>> dir_map;
 
     for (const auto& str : input) {
@@ -29,12 +28,10 @@ int solve(const std::vector<std::string>& input, std::string LR) {
                 curr = dir_map[curr].first;
                 break;
         }
-        ++result;
         ++i;
-//        if(i == LR.size()) i = 0;
     }
 
-    return result;
+    return i;
 }
 
 int main(int argc, char *argv[]) {
