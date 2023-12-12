@@ -4,17 +4,6 @@
 #include <map>
 #include <sstream>
 
-int solve2(const std::vector<std::string>& input) {
-    uint32_t result{}; 
-
-    for (const auto& str : input) {
-
-    }
-
-    return result;
-
-}
-
 int solve(const std::vector<std::string>& input, std::string LR) {
 
     uint32_t result{}; 
@@ -30,8 +19,9 @@ int solve(const std::vector<std::string>& input, std::string LR) {
     std::string curr = "AAA";
     std::string goal = "ZZZ";
     size_t i = 0;
+
     while (curr != goal) {
-        switch(LR[i]) {
+        switch(LR[i % (LR.size())]) {
             case 'R':
                 curr = dir_map[curr].second;
                 break;
@@ -41,7 +31,7 @@ int solve(const std::vector<std::string>& input, std::string LR) {
         }
         ++result;
         ++i;
-        if(i == LR.size()) i = 0;
+//        if(i == LR.size()) i = 0;
     }
 
     return result;
@@ -76,7 +66,7 @@ int main(int argc, char *argv[]) {
     inputFile.close();
 
     int result = solve(input, LR);
-    int result2 = solve2(input);
+    int result2 = solve(input, LR);
 
     std::cout << "Solution: " << result << std::endl;
     std::cout << "Solution 2: " << result2 << std::endl;
