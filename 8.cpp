@@ -3,8 +3,9 @@
 #include <vector>
 #include <map>
 #include <sstream>
+#include <numeric>
 
-int solve(const std::vector<std::string>& input, std::string LR) {
+size_t solve(const std::vector<std::string>& input, std::string LR, bool part2) {
 
     std::map<std::string, std::pair<std::string, std::string>> dir_map;
 
@@ -15,9 +16,44 @@ int solve(const std::vector<std::string>& input, std::string LR) {
         dir_map[key] = std::make_pair(left, right);
     }
     
+    size_t i = 0;
+
+    if (part2) {
+        std::vector<std::string> all_curr;
+        std::vector<size_t> ns;
+
+        for (const auto& entry : dir_map) {
+            const std::string& key = entry.first;
+            if (key.back() == 'A') all_curr.push_back(key);
+        }
+
+        for (auto &key : all_curr) {
+            while(key[2] != 'Z') {
+                switch(LR[i % (LR.size())]) {
+                    case 'R':
+                        key = dir_map[key].second;
+                        break;
+                    case 'L':
+                        key = dir_map[key].first;
+                        break;
+                }
+                ++i;
+            }
+            ns.push_back(i);
+            i = 0;
+        }
+
+        size_t lc = 0;
+
+        for(auto &n : ns) {
+            if(lc == 0) lc = n;
+            else lc = std::lcm(lc, n);
+        }
+        return lc;
+    }
+
     std::string curr = "AAA";
     std::string goal = "ZZZ";
-    size_t i = 0;
 
     while (curr != goal) {
         switch(LR[i % (LR.size())]) {
@@ -35,17 +71,16 @@ int solve(const std::vector<std::string>& input, std::string LR) {
 }
 
 int main(int argc, char *argv[]) {
-    if (argc != 2) {
-        std::cerr << "Usage: " << argv[0] << " <input_file>" << std::endl;
+    if (argc != 3) {
+        std::cerr << "Usage: " << argv[0] << " <input_file> ?part2" << std::endl;
         return 1;
-
     }
 
     std::ifstream inputFile(argv[1]);
+    bool part2 = std::stoi(argv[2]);
     if (!inputFile.is_open()) {
         std::cerr << "Error opening the input file!" << std::endl;
         return 1;
-
     }
 
     std::vector<std::string> input;
@@ -62,11 +97,9 @@ int main(int argc, char *argv[]) {
 
     inputFile.close();
 
-    int result = solve(input, LR);
-    int result2 = solve(input, LR);
+    size_t result = solve(input, LR, part2);
 
     std::cout << "Solution: " << result << std::endl;
-    std::cout << "Solution 2: " << result2 << std::endl;
 
     return 0;
 
