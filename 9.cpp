@@ -6,7 +6,7 @@
 #include <map>
 #include <sstream>
 
-int solve(const std::vector<std::vector<int>>& input) {
+int solve(const std::vector<std::vector<int>>& input, bool part2) {
     int result{}; 
 
     auto is_zero = [](int e) { return e == 0; };
@@ -25,13 +25,18 @@ int solve(const std::vector<std::vector<int>>& input) {
             next_line = diffrences;
             az = std::all_of(next_line.begin(), next_line.end(), is_zero);     
         }
-        for (size_t i = 0; i < seqs.size() -1; ++i) {
-            int a = seqs[i].back();
-            int b = seqs[i+1].back();
-            int next_n = a + b;
-            seqs[i+1].push_back(next_n);
+
+        for (size_t i = 0; i < seqs.size()-1; ++i) {
+            int a = part2 ? seqs[i].front() : seqs[i].back();
+            int b = part2 ? seqs[i+1].front() : seqs[i+1].back();
+            int next_n = part2 ? (b - a) : (a + b);
+            if(part2) {
+                seqs[i+1].insert(seqs[i+1].begin(), next_n);
+            } else {
+                seqs[i+1].push_back(next_n);
+            }
         }
-        result += seqs.back().back();
+        result += part2 ? seqs.back().front() : seqs.back().back();
     }
 
     return result;
@@ -64,9 +69,11 @@ int main(int argc, char *argv[]) {
 
     inputFile.close();
 
-    int result = solve(input);
+    int result = solve(input, false);
+    int result2 = solve(input, true);
 
     std::cout << "Solution: " << result << std::endl;
+    std::cout << "Solution 2: " << result2 << std::endl;
 
     return 0;
 
