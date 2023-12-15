@@ -91,19 +91,6 @@ coord_t find_next(coord_t node,
     return node;
 }
 
-char find_start_char(coord_t start, const std::vector<std::string>& input) {
-
-    coord_t w = std::make_pair(start.first + 1, start.second);
-    coord_t a = std::make_pair(start.first, start.second - 1);
-    coord_t s = std::make_pair(start.first - 1, start.second);
-    coord_t d = std::make_pair(start.first, start.second + 1);
-
-    for (coord_t &n : {w, a, s, d}) {
-        
-
-    }
-
-} 
 
 int solve(std::vector<std::string>& input) {
     uint32_t result{}; 
