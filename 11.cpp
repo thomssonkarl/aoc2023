@@ -5,27 +5,39 @@
 #include <string>
 #include <map>
 #include <sstream>
+#include <algorithm>
 
 uint64_t solve(const std::vector<std::string>& input, size_t expansion_factor) {
     uint64_t result{}; 
     
     size_t key = 1; 
-    std::map<size_t, std::pair<int, int>> coords;
-    for (size_t y = 0; y < input.size(); ++y) {
-        std::vector<size_t> xs;
-        size_t hashtag = input[y].find('#');
-        while (hashtag != std::string::npos) {
-            xs.push_back(hashtag);
-            hashtag = input[y].find('#', hashtag + 1);
-        }
-        if (!xs.empty()) {
-            for (auto x : xs) {
-                coords[key] = std::make_pair(y, x); 
+    std::map<size_t, std::pair<size_t, size_t>> coords;
+    std::vector<bool> empty_rows(input.size(), false);
+    std::vector<bool> empty_cols(input.size(), false);
+
+
+    for(size_t row = 0; row < input.size(); ++row) {
+        for(size_t col = 0; col < input[0].size(); ++col) {
+            if(input[row][col] == '#') {
+                coords[key] = std::make_pair(row, col);
                 ++key;
             }
-        } else {
-            y += (expansion_factor - 1);
         }
+    }
+
+    for(size_t row = 0; row < input.size(); ++row) {
+        if (input[row].find('#') == std::string::npos) empty_rows[row] = true;
+    }
+
+    for(size_t col = 0; col < input[0].size(); ++col) {
+        bool empty = true;
+        for(size_t row = 0; row < input.size(); ++row) {
+            if(input[row][col] != '.') {
+                empty = false;
+                break;
+            }
+        }
+        if(empty) empty_cols[col] = true;
     }
 
     std::vector<std::pair<size_t, size_t>> key_pairs;
@@ -37,44 +49,32 @@ uint64_t solve(const std::vector<std::string>& input, size_t expansion_factor) {
             if (key1 < key2) key_pairs.push_back(std::make_pair(key1, key2));
         }
     }
-    
+     
     for (auto& keys : key_pairs) {
-        std::pair<int, int> start = coords[keys.first]; 
-        std::pair<int, int> end   = coords[keys.second]; 
-        int steps = std::abs(end.second - start.second) + std::abs(end.first - start.first);
-        result += steps;
+        std::pair<size_t, size_t> start = coords[keys.first]; 
+        std::pair<size_t, size_t> end   = coords[keys.second]; 
+        
+        size_t rs = std::min(start.first, end.first);
+        size_t re = std::max(start.first, end.first);
+
+        size_t cs = std::min(start.second, end.second);
+        size_t ce = std::max(start.second, end.second);
+
+        
+        for (size_t row = rs; row < re; ++row) {
+            ++result;
+            if (empty_rows[row]) result += (expansion_factor-1);
+        }
+
+        for (size_t col = cs; col < ce; ++col) {
+            ++result;
+            if (empty_cols[col]) result += (expansion_factor-1);
+        }
     }
+
     return result;
 }
 
-void expand_galaxies(std::vector<std::string>& input, size_t expansion_factor) {
-    
-    size_t size = input.size();
-
-    for (size_t r = 0; r < input.size(); ++r) {
-        if (input[r].find("#") != std::string::npos) continue;  
-        input.insert(input.begin() + (r+1), expansion_factor-1, std::string(size, '.'));
-        r += (expansion_factor-1);
-    }
-    size = input.size();
-
-    for (size_t c = 0; c < input[0].size(); ++c) {
-        bool expand = true;
-        for(size_t r = 0; r < size; ++r) {
-            if(input[r][c] != '.') {
-                expand = false;
-                break;
-            }
-        }
-        if (expand) {
-            std::string expansion((expansion_factor-1), '.');
-            for (size_t i = 0; i < input.size(); ++i) {
-                input[i].insert(c, expansion);  
-            }
-            c += (expansion_factor-1);
-        }
-    }
-}
 
 int main(int argc, char *argv[]) {
     if (argc != 3) {
@@ -98,10 +98,8 @@ int main(int argc, char *argv[]) {
     }
 
     inputFile.close();
-    size_t expansion_factor = part2 ? 1000000 : 2;
 
-    expand_galaxies(input, expansion_factor);
-    
+    size_t expansion_factor = part2 ? 1000000 : 2;
     
     uint64_t result = solve(input, expansion_factor);
     std::cout << "Solution: " << result << std::endl;
