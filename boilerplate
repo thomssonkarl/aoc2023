@@ -1,21 +1,9 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <numeric>
-#include <cmath>
 #include <map>
 #include <sstream>
 
-int solve2(const std::vector<std::string>& input) {
-    uint32_t result{}; 
-
-    for (const auto& str : input) {
-
-    }
-
-    return result;
-
-}
 
 int solve(const std::vector<std::string>& input) {
     uint32_t result{}; 
@@ -29,8 +17,8 @@ int solve(const std::vector<std::string>& input) {
 }
 
 int main(int argc, char *argv[]) {
-    if (argc != 2) {
-        std::cerr << "Usage: " << argv[0] << " <input_file>" << std::endl;
+    if (argc != 3) {
+        std::cerr << "Usage: " << argv[0] << " <input_file> " << "<?part2>" << std::endl;
         return 1;
 
     }
@@ -41,7 +29,7 @@ int main(int argc, char *argv[]) {
         return 1;
 
     }
-
+    bool part2 = std::stoi(argv[2]);
     std::vector<std::string> input;
     std::string line;
     while (getline(inputFile, line)) {
@@ -52,10 +40,8 @@ int main(int argc, char *argv[]) {
     inputFile.close();
 
     int result = solve(input);
-    int result2 = solve2(input);
 
     std::cout << "Solution: " << result << std::endl;
-    std::cout << "Solution 2: " << result2 << std::endl;
 
     return 0;
 
