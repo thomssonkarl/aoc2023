@@ -28,7 +28,7 @@ bool is_valid_move(char t, int dx, int dy) {
 }
 
 void process_move(int x, int y, int dx, int dy, std::set<Tile>& visited, std::deque<Tile>& queue) {
-    if (!visited.count({x, y, dx, dy})) {
+    if (!visited.contains({x, y, dx, dy})) {
         visited.insert({x, y, dx, dy});
         queue.push_back({x, y, dx, dy});
     }
