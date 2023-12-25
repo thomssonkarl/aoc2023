@@ -5,6 +5,9 @@
 #include <string>
 #include <deque>
 #include <set>
+#include <thread>
+#include <chrono>
+#include <algorithm>
 
 using coord_t = std::pair<int, int>;
 
@@ -34,10 +37,33 @@ void process_move(int x, int y, int dx, int dy, std::set<Tile>& visited, std::de
     }
 }
 
-size_t solve(std::vector<std::vector<char>>& input) {
-    Tile start = {-1, 0, 1, 0};
+
+void show_simulation(std::vector<std::vector<char>>& simulation, int dx, int dy, int x, int y) {
+    std::cout << "\033[2J\033[H";
+    
+    for (const auto& row : simulation) {
+        for (char c : row) {
+            std::cout << c;
+        }
+        std::cout << '\n';
+    }
+    std::cout.flush();
+    if (simulation[y][x] == '.') {
+        char laser;
+        if (dx > 0) laser = '>';
+        if (dx < 0) laser = '<';
+        if (dy > 0) laser = 'v';
+        if (dy < 0) laser = '^';
+        simulation[y][x] = laser;
+    }
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+}
+
+size_t solve(std::vector<std::vector<char>>& input, Tile start, bool verbose) {
     std::deque<Tile> queue(1, start);
     std::set<Tile> visited;
+    std::vector<std::vector<char>> copy = input;
 
     while (!queue.empty()) {
         Tile current = queue.front();
@@ -52,6 +78,9 @@ size_t solve(std::vector<std::vector<char>>& input) {
 
         char tile_type = input[y][x];
 
+        if (verbose)
+            show_simulation(copy, current.dx, current.dy, current.x, current.y);
+        
         if (is_valid_move(tile_type, current.dx, current.dy)) {
             process_move(x, y, current.dx, current.dy, visited, queue);
         } else if (tile_type == '\\') {
@@ -70,6 +99,7 @@ size_t solve(std::vector<std::vector<char>>& input) {
     }
 
     std::set<coord_t> energized;
+
     for (const auto& tile : visited) {
         energized.insert({tile.x, tile.y});
     }
@@ -78,8 +108,8 @@ size_t solve(std::vector<std::vector<char>>& input) {
 }
 
 int main(int argc, char *argv[]) {
-    if (argc != 3) {
-        std::cerr << "Usage: " << argv[0] << " <input_file> " << "<?part2>" << std::endl;
+    if (argc != 4) {
+        std::cerr << "Usage: " << argv[0] << " <input_file>  <?part2> <?verbose>" << std::endl;
         return 1;
     }
 
@@ -90,6 +120,7 @@ int main(int argc, char *argv[]) {
     }
 
     bool part2 = std::stoi(argv[2]);
+    bool verbose = std::stoi(argv[3]);
     std::vector<std::vector<char>> input;
     std::string line;
     
@@ -99,8 +130,26 @@ int main(int argc, char *argv[]) {
     }
 
     inputFile.close();
+    
+    if(part2) {
+        size_t curr_max = 0;
+        Tile start;
+        for (int row = 0; row < input.size(); ++row) {
+            start = {-1, row, 1, 0};
+            curr_max = std::max(curr_max, solve(input, start, verbose));
+            start = {static_cast<int>(input[0].size()), row, -1, 0};
+            curr_max = std::max(curr_max, solve(input, start, verbose));
+        }
+        for (int col = 0; col < input[0].size(); ++col) {
+            start = {col, -1, 0, 1};
+            curr_max = std::max(curr_max, solve(input, start, verbose));
+            start = {col, static_cast<int>(input.size()), 0, -1};
+        }
+        std::cout << "Solution: " << curr_max << std::endl;
+        return 0;
+    }
 
-    size_t result = solve(input);
+    size_t result = solve(input, {-1,0,1,0}, verbose);
 
     std::cout << "Solution: " << result << std::endl;
 
