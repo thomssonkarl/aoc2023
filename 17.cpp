@@ -42,13 +42,13 @@ struct State {
     }
 };
 
-int solve(const std::vector<std::vector<int>>& input) {
+int solve(const std::vector<std::vector<int>>& input, bool part2) {
     const size_t rows = input.size();
     const size_t cols = input[0].size();
     std::priority_queue<Node, std::vector<Node>, std::greater<Node>> pq;
-    std::map<State, int> seen;
+    std::map<State, int> visited;
 
-    const Node start(0,0,0,0,{0,0});
+    const Node start(0, 0, 0, 0, {0,0});
     pq.push(start);
 
     while(!pq.empty()) {
@@ -56,8 +56,8 @@ int solve(const std::vector<std::vector<int>>& input) {
         auto [x, y, cost, steps, dir] = current;
         State cs(x,y,steps,dir);
 
-        if (seen.contains(cs)) continue;
-        seen[cs] = cost;
+        if (visited.contains(cs)) continue;
+        visited[cs] = cost;
 
         const std::vector<dir_t> directions = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
         
@@ -67,20 +67,22 @@ int solve(const std::vector<std::vector<int>>& input) {
             int new_steps = (direction != dir) ? 1 : steps+1;
 
             bool reverse = direction == std::make_pair(-dir.first, -dir.second);
-            bool valid_steps = new_steps <= 3;
+            bool vs1 = new_steps <= 3;
+            bool vs2 = new_steps <= 10 && (direction == dir || steps >= 4 || steps == 0);
+            bool vs = part2 ? vs2 : vs1;
 
-            if (nx >= 0 && nx < cols && ny >= 0 && ny < rows && !reverse && valid_steps) {
+            if (nx >= 0 && nx < cols && ny >= 0 && ny < rows && !reverse && vs) {
                 int new_cost = cost + input[ny][nx];
-                State new_state(nx,ny,new_steps,direction);
-                if (seen.contains(new_state)) continue;
-                pq.push(Node(nx,ny,new_cost,new_steps,direction));
+                State new_state(nx, ny, new_steps, direction);
+                if (visited.contains(new_state)) continue;
+                pq.push(Node(nx, ny, new_cost, new_steps, direction));
             }
         }
     }
     int result = std::numeric_limits<int>::max();
-    for (const auto& state : seen) {
+    for (const auto& state : visited) {
         auto [x, y, steps, dir] = state.first;
-        if (x == cols-1 && y == rows-1) {
+        if ((x == cols-1 && y == rows-1) && (steps >= 4 || !part2)) {
             result = std::min(result, state.second);
         } 
     }
@@ -114,7 +116,7 @@ int main(int argc, char *argv[]) {
 
     inputFile.close();
 
-    int result = solve(input);
+    int result = solve(input, part2);
 
     std::cout << "Solution: " << result << std::endl;
 
